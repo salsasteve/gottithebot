@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  gottithebot:
+    image: gottithebot
+    build:
+      context: .
+      dockerfile: ./Dockerfile
