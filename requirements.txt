@@ -2,3 +2,6 @@
 python-telegram-bot==13.15
 openai==0.25.0
 python-dotenv==0.21.0
+black==22.12.0
+pillow==9.3.0
+ipython==8.7.0
