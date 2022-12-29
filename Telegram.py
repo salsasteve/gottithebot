@@ -6,11 +6,9 @@ from telegram.ext.messagehandler import MessageHandler
 from telegram.ext.filters import Filters
 from dotenv import load_dotenv
 import os
-from Openai_wrapper import ask_question
+from Openai_wrapper import ask_question, generate_image
 
-load_dotenv()
 
-updater = Updater(os.getenv("TELEGRAM_TOKEN"), use_context=True)
 
 def start(update: Update, context: CallbackContext):
     update.message.reply_text("Hello, I'm OpenAI bot!")
@@ -31,8 +29,34 @@ def ask(update: Update, context: CallbackContext):
         answer = ask_question(question)
         update.message.reply_text(answer)
 
-updater.dispatcher.add_handler(CommandHandler('start', start))
-updater.dispatcher.add_handler(CommandHandler('echo', echo))
-updater.dispatcher.add_handler(CommandHandler('ask', ask))
+def unknown(update: Update, context: CallbackContext):
+    """Send a message when the command is unknown."""
+    update.message.reply_text("Sorry, I didn't understand that command.")
 
-updater.start_polling()
+def generate_img(update: Update, context: CallbackContext):
+    """Generate an image from a prompt"""
+    if update.message.text == "/generate_img":
+        update.message.reply_text("Please type something after /generate_img")
+    else:
+        prompt = update.message.text.replace("/generate_img ", "")
+        image_path, caption = generate_image(prompt)
+        update.message.bot.send_photo(update.message.chat_id, photo=open(image_path, "rb"), caption=caption)
+
+def main():
+
+    load_dotenv()
+    TOKEN = os.getenv("TELEGRAM_TOKEN")
+
+    updater = Updater(TOKEN, use_context=True)
+
+    updater.dispatcher.add_handler(CommandHandler('start', start))
+    updater.dispatcher.add_handler(CommandHandler('echo', echo))
+    updater.dispatcher.add_handler(CommandHandler('ask', ask))
+    updater.dispatcher.add_handler(CommandHandler('generate_img', generate_img))
+    updater.dispatcher.add_handler(MessageHandler(Filters.command, unknown))
+
+    updater.start_polling()
+
+
+if __name__ == '__main__':
+    main()
