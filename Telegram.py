@@ -47,8 +47,6 @@ def main():
     load_dotenv()
     TOKEN = os.getenv("TELEGRAM_TOKEN")
 
-    load_dotenv()
-
     updater = Updater(TOKEN, use_context=True)
 
     updater.dispatcher.add_handler(CommandHandler('start', start))
