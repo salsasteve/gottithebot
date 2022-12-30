@@ -3,6 +3,8 @@ version: '3.4'
 services:
   gottithebot:
     image: gottithebot
+    env_file:
+      - .env
     build:
       context: .
       dockerfile: ./Dockerfile
