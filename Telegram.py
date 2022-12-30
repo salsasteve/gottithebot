@@ -4,7 +4,6 @@ from telegram.ext.callbackcontext import CallbackContext
 from telegram.ext.commandhandler import CommandHandler
 from telegram.ext.messagehandler import MessageHandler
 from telegram.ext.filters import Filters
-from dotenv import load_dotenv
 import os
 from Openai_wrapper import ask_question, generate_image
 
@@ -44,7 +43,6 @@ def generate_img(update: Update, context: CallbackContext):
 
 def main():
 
-    load_dotenv()
     TOKEN = os.getenv("TELEGRAM_TOKEN")
 
     updater = Updater(TOKEN, use_context=True)
