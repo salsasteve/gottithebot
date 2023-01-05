@@ -1,0 +1,110 @@
+import hashlib
+import os
+
+import openai
+import requests
+from dotenv import load_dotenv
+
+
+class OpenAIClient:
+    def __init__(self):
+        load_dotenv()
+        self.OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+        openai.api_key = self.OPENAI_API_KEY
+        self.base_image_path = os.getenv(
+            "IMAGE_PATH"
+        )  # TODO: Create online storage for images
+
+    def ask_question(self, question: str) -> str:
+        """Ask OpenAI for a response
+
+        :param question: short question to ask
+        :type question: str
+        :return: response from OpenAI
+        :rtype: str
+        """
+
+        response = openai.Completion.create(
+            model="text-davinci-003",
+            prompt=question,
+            temperature=0.7,
+            max_tokens=200,
+            top_p=1.0,
+            frequency_penalty=0.0,
+            presence_penalty=0.0,
+            stream=True,
+        )
+
+        completion_text = self.response_parser(response)
+        return completion_text
+
+    def generate_image(self, prompt: str) -> str:
+        """Generate an image from a prompt
+
+        :param prompt: prompt to generate image from
+        :type prompt: str
+        :return: path to generated image
+        :rtype: str
+        """
+
+        generation_response = openai.Image.create(
+            prompt=prompt,
+            n=1,
+            size="1024x1024",
+            response_format="url",
+        )
+
+        image_path = self.generate_image_name(prompt)
+
+        if self.download_image(generation_response["url"], image_path):
+            return image_path
+        else:
+            return None
+
+    def response_parser(self, response: dict) -> str:
+        """Parse the response from OpenAI
+
+        :param response: response from OpenAI
+        :type response: str
+        :return: parsed response
+        :rtype: str
+        """
+
+        parsed_response = ""
+        for event in response:
+            print(event)
+            event_text = event["choices"][0]["text"]
+            parsed_response += event_text
+        return parsed_response
+
+    def generate_image_name(self, prompt: str) -> str:
+        """Generate a unique image name
+
+        :param prompt: prompt to generate image name from
+        :type prompt: str
+        :return: unique image name
+        :rtype: str
+        """
+
+        image_filename = hashlib.sha1(prompt.encode("utf-8")).hexdigest() + ".png"
+        full_image_path = os.path.join(self.base_image_path, image_filename)
+        return full_image_path
+
+    def download_image(self, url: str, save_path: str) -> bool:
+        """Download an image from a url
+
+        :param url: url to download image from
+        :type url: str
+        :return: True if image was downloaded, False otherwise
+        :rtype: bool
+        """
+
+        image_data = requests.get(url).content
+        with open(save_path, "wb") as handler:
+            handler.write(image_data)
+
+        return os.path.isfile(save_path)
+
+
+ai = OpenAIClient()
+print(ai.ask_question("What is the meaning of life?"))
