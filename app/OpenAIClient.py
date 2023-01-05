@@ -1,16 +1,16 @@
-import hashlib
+import base64
 import os
 
-import openai
 import requests
 from dotenv import load_dotenv
 
 
 class OpenAIClient:
-    def __init__(self):
+    def __init__(self, openai):
         load_dotenv()
         self.OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-        openai.api_key = self.OPENAI_API_KEY
+        self.openai = openai
+        self.openai.api_key = self.OPENAI_API_KEY
         self.base_image_path = os.getenv(
             "IMAGE_PATH"
         )  # TODO: Create online storage for images
@@ -24,7 +24,7 @@ class OpenAIClient:
         :rtype: str
         """
 
-        response = openai.Completion.create(
+        response = self.openai.Completion.create(
             model="text-davinci-003",
             prompt=question,
             temperature=0.7,
@@ -47,7 +47,7 @@ class OpenAIClient:
         :rtype: str
         """
 
-        generation_response = openai.Image.create(
+        generation_response = self.openai.Image.create(
             prompt=prompt,
             n=1,
             size="1024x1024",
@@ -86,7 +86,7 @@ class OpenAIClient:
         :rtype: str
         """
 
-        image_filename = hashlib.sha1(prompt.encode("utf-8")).hexdigest() + ".png"
+        image_filename = self.encode_msg(prompt)
         full_image_path = os.path.join(self.base_image_path, image_filename)
         return full_image_path
 
@@ -105,6 +105,14 @@ class OpenAIClient:
 
         return os.path.isfile(save_path)
 
+    def encode_msg(self, message: str) -> str:
+        message_bytes = message.encode("ascii")
+        base64_bytes = base64.b64encode(message_bytes)
+        base64_message = base64_bytes.decode("ascii")
+        return base64_message
 
-ai = OpenAIClient()
-print(ai.ask_question("What is the meaning of life?"))
+    def decode_msg(self, base64_message: str) -> str:
+        base64_bytes = base64_message.encode("ascii")
+        message_bytes = base64.b64decode(base64_bytes)
+        message = message_bytes.decode("ascii")
+        return message
