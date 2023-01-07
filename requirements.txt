@@ -1,5 +1,5 @@
 # To ensure app dependencies are ported from your virtual environment/host machine into your container, run 'pip freeze > requirements.txt' in the terminal to overwrite this file
-python-telegram-bot==13.15
+python-telegram-bot==20.0
 openai==0.25.0
 python-dotenv==0.21.0
 black==22.12.0

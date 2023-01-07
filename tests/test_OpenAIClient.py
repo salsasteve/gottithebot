@@ -1,7 +1,6 @@
 import base64
 import os
 
-import openai
 import pytest
 
 from app.OpenAIClient import OpenAIClient
@@ -11,9 +10,7 @@ from app.OpenAIClient import OpenAIClient
 def openai_response():
     return [
         {
-            "choices": [
-                {"finish_reason": None, "index": 0, "logprobs": None, "text": "Paris"}
-            ],
+            "choices": [{"finish_reason": None, "index": 0, "logprobs": None, "text": "Paris"}],
             "created": 1672898297,
             "id": "cmpl-6VDYXBltl88amL5jz8vs4OxJEmx7V",
             "model": "text-davinci-003",
@@ -51,19 +48,19 @@ def openai_response():
 
 
 def test_init():
-    client = OpenAIClient(openai)
+    client = OpenAIClient()
     assert client.OPENAI_API_KEY is not None
     assert os.path.exists(client.base_image_path)
 
 
 def test_response_parser(openai_response):
-    client = OpenAIClient(openai)
+    client = OpenAIClient()
     response = client.response_parser(openai_response)
     assert response == "Paris is the capital of France."
 
 
 def test_generate_image_name():
-    client = OpenAIClient(openai)
+    client = OpenAIClient()
     prompt = "some prompt"
     full_image_path = client.generate_image_name(prompt)
 

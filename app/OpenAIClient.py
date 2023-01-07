@@ -1,19 +1,19 @@
 import base64
 import os
 
+import openai
 import requests
 from dotenv import load_dotenv
 
 
 class OpenAIClient:
-    def __init__(self, openai):
+    def __init__(self):
         load_dotenv()
         self.OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
         self.openai = openai
         self.openai.api_key = self.OPENAI_API_KEY
-        self.base_image_path = os.getenv(
-            "IMAGE_PATH"
-        )  # TODO: Create online storage for images
+        self.base_image_path = os.getenv("IMAGE_PATH")  # TODO: Create online storage for images
+        self.image_folder = os.getenv("IMAGE_FOLDER")
 
     def ask_question(self, question: str) -> str:
         """Ask OpenAI for a response
@@ -46,7 +46,6 @@ class OpenAIClient:
         :return: path to generated image
         :rtype: str
         """
-
         generation_response = self.openai.Image.create(
             prompt=prompt,
             n=1,
@@ -54,9 +53,9 @@ class OpenAIClient:
             response_format="url",
         )
 
-        image_path = self.generate_image_name(prompt)
-
-        if self.download_image(generation_response["url"], image_path):
+        image_path = self.generate_image_path(prompt)
+        url = generation_response["data"][0]["url"]
+        if self.download_image(url, image_path):
             return image_path
         else:
             return None
@@ -72,12 +71,11 @@ class OpenAIClient:
 
         parsed_response = ""
         for event in response:
-            print(event)
             event_text = event["choices"][0]["text"]
             parsed_response += event_text
         return parsed_response
 
-    def generate_image_name(self, prompt: str) -> str:
+    def generate_image_path(self, prompt: str) -> str:
         """Generate a unique image name
 
         :param prompt: prompt to generate image name from
@@ -86,9 +84,15 @@ class OpenAIClient:
         :rtype: str
         """
 
-        image_filename = self.encode_msg(prompt)
-        full_image_path = os.path.join(self.base_image_path, image_filename)
-        return full_image_path
+        generated_image_name = self.encode_msg(prompt) + ".png"
+        image_dir = os.path.join(os.curdir, self.image_folder)
+
+        if not os.path.isdir(image_dir):
+            os.mkdir(image_dir)
+
+        generated_image_filepath = os.path.join(image_dir, generated_image_name)
+
+        return generated_image_filepath
 
     def download_image(self, url: str, save_path: str) -> bool:
         """Download an image from a url
