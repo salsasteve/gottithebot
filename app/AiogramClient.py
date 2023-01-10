@@ -1,9 +1,14 @@
+import os
+
 from aiogram import Bot, Dispatcher, types
+from dotenv import load_dotenv
 from OpenAIClient import OpenAIClient
 
 # import pyqrcode
 openai = OpenAIClient()
-bot = Bot(token="5934055799:AAETkEzMhoDfzN-BVGQr63cHBp56YYpdLeI")
+load_dotenv()
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
+bot = Bot(token=TELEGRAM_TOKEN)
 dp = Dispatcher(bot)
 
 
