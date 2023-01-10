@@ -59,21 +59,21 @@ def test_response_parser(openai_response):
     assert response == "Paris is the capital of France."
 
 
-def test_generate_image_name():
+def test_generate_image_path():
     client = OpenAIClient()
     prompt = "some prompt"
-    full_image_path = client.generate_image_name(prompt)
+    full_image_path = client.generate_image_path(prompt)
 
     # Encode test file name to test against
     message_bytes = prompt.encode("ascii")
-    base64_bytes = base64.b64encode(message_bytes)
+    base64_bytes = base64.urlsafe_b64encode(message_bytes)
     test_file_name = base64_bytes.decode("ascii")
-    test_path = os.path.join("../images", test_file_name)
+    test_path = os.path.join("./images", test_file_name) + ".png"
 
     # Decode file name to test against orignal prompt
     image_file_name_64 = os.path.basename(full_image_path)
     base64_bytes = image_file_name_64.encode("ascii")
-    message_bytes = base64.b64decode(base64_bytes)
+    message_bytes = base64.urlsafe_b64decode(base64_bytes)
     image_file_name = message_bytes.decode("ascii")
 
     assert full_image_path == test_path
