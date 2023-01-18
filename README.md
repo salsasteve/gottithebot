@@ -1,6 +1,6 @@
 # Gotti The Bot
 
-This is a simple chatbot that uses the ChatGPT library to generate responses to messages received from users on Telegram.
+This is a simple chatbot that uses the ChatGPT library to generate responses to messages received from users on Telegram and Discord.
 
 ## Prerequisite
 
