@@ -1,2 +1,9 @@
 config.json
 **/.env**
+node_modules
+*.log
+.nuxt
+nuxt.d.ts
+.output
+.env
+**/.DS_Store**
