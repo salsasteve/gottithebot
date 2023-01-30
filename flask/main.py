@@ -8,8 +8,21 @@ openai.api_key = ""
 
 app = Flask(__name__)
 
+
 @app.route("/")
 def index():
+    
+    print('Welcome to the App!')
+    
+    return (
+        """<a href="/image">DALL-E</a>
+           <a href="/text">ChatGPT</a>"""
+    )
+
+
+
+@app.route("/text")
+def index1():
     textInput = request.args.get("textInput", "")
     if textInput:
         textOutput = chatGPT(textInput)
@@ -23,7 +36,7 @@ def index():
         + textOutput
     )
 
-@app.route("/images")
+@app.route("/image")
 def index2():
     imageInput = request.args.get("imageInput", "")
     if imageInput:
