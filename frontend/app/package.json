@@ -8,6 +8,14 @@
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
+    "@nuxtjs/supabase": "^0.3.0",
+    "@nuxtjs/vuetify": "^1.12.3",
     "nuxt": "^3.1.0"
+  },
+  "dependencies": {
+    "@pinia/nuxt": "^0.4.6",
+    "@supabase/supabase-js": "^2.7.1",
+    "build": "^0.1.4",
+    "pinia": "^2.0.30"
   }
 }
