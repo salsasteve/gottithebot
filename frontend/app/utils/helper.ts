@@ -8,3 +8,7 @@ export function parseEmail(email: string): {
     domain: parts[1],
   };
 }
+
+export function checkOnLocal(): boolean {
+  return window.location.hostname === "localhost";
+}

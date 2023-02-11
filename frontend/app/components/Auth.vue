@@ -45,7 +45,19 @@ const handleLogin = async () => {
   try {
     loading.value = true;
     console.log(email.value);
-    const { error } = await supabase.auth.signInWithOtp({ email: email.value });
+    let redirect_link = "https://www.thingkr.xyz";
+    if (checkOnLocal()) {
+      redirect_link = "http://localhost:3000";
+      console.log("local");
+    }
+
+    const { data, error } = await supabase.auth.signInWithOtp({
+      email: email.value,
+      options: {
+        redirect_to: redirect_link,
+      },
+    });
+    console.log("data", data);
     if (error) throw error;
     alert("Check your email for the login link!");
   } catch (error) {
