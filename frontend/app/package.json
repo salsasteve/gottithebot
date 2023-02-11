@@ -8,6 +8,17 @@
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
+    "@mdi/font": "^7.1.96",
+    "@nuxtjs/supabase": "^0.3.0",
+    "@nuxtjs/vuetify": "^1.12.3",
     "nuxt": "^3.1.0"
+  },
+  "dependencies": {
+    "@pinia/nuxt": "^0.4.6",
+    "@supabase/supabase-js": "^2.7.1",
+    "build": "^0.1.4",
+    "dominant-color": "^0.0.1",
+    "pinia": "^2.0.30",
+    "vuetify": "^3.1.4"
   }
 }
