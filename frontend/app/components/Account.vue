@@ -8,26 +8,25 @@
               <Avatar v-if="src" :src="src" />
             </v-col>
             <v-col cols="12" sm="12">
-              <v-card-text>
-                <h3>{{ website }}</h3>
-              </v-card-text>
               <form>
                 <v-text-field
-                  v-model="username"
+                  :model-value="username"
                   :counter="15"
+                  variant="outlined"
                   label="Username"
                   required
                 ></v-text-field>
 
                 <v-text-field
-                  v-model="email"
+                  :model-value="email"
+                  variant="outlined"
                   label="Email"
                   required
                 ></v-text-field>
 
                 <v-text-field
-                  v-model="website"
-                  :items="website"
+                  :model-value="website"
+                  variant="outlined"
                   label="Website"
                   required
                 ></v-text-field>
@@ -93,9 +92,9 @@ if (!user) {
 } else {
   const data = await getProfile(user.value.id, supabase);
 
-  username.value = data.username;
-  email.value = user.value.email;
-  website.value = data.website;
+  username.value = data.username || parseEmail(user.value.email).username;
+  email.value = user.value.email || user.value.email;
+  website.value = data.website || "koolkids.ai";
   avatar.value = data.avatar_url;
 
   downloadImage(avatar, src, supabase);

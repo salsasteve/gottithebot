@@ -9,5 +9,13 @@
   "eslint.alwaysShowStatus": true,
   "eslint.format.enable": true,
   "eslint.packageManager": "yarn",
-  "cSpell.words": ["nuxt", "nuxtjs", "pinia", "supabase", "vuetify"]
+  "cSpell.words": [
+    "Kool",
+    "koolkids",
+    "nuxt",
+    "nuxtjs",
+    "pinia",
+    "supabase",
+    "vuetify"
+  ]
 }
