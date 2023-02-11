@@ -1,26 +1,39 @@
 <template>
-  <form class="row flex-center flex" @submit.prevent="handleLogin">
-    <div class="col-6 form-widget">
-      <h1 class="header">Supabase + Nuxt 3</h1>
-      <p class="description">Sign in via magic link with your email below</p>
-      <div>
-        <input
-          class="inputField"
-          type="email"
-          placeholder="Your email"
-          v-model="email"
-        />
-      </div>
-      <div>
-        <input
-          type="submit"
-          class="button block"
-          :value="loading ? 'Loading' : 'Send magic link'"
-          :disabled="loading"
-        />
-      </div>
-    </div>
-  </form>
+  <v-container fluid fill-height>
+    <v-layout align-center justify-center>
+      <v-row>
+        <v-col xs12 sm8 md4>
+          <v-card class="elevation-12">
+            <v-toolbar dark color="primary">
+              <v-toolbar-title>Sign in via magic link</v-toolbar-title>
+            </v-toolbar>
+            <v-card-text>
+              <v-form>
+                <v-text-field
+                  prepend-icon="person"
+                  v-model="email"
+                  label="Email"
+                  type="text"
+                ></v-text-field>
+              </v-form>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn
+                :loading="loading"
+                :disabled="loading"
+                outline="primary"
+                color="primary"
+                @click="handleLogin"
+              >
+                Send Link
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-layout>
+  </v-container>
 </template>
   
   <script setup>
@@ -31,6 +44,7 @@ const email = ref("");
 const handleLogin = async () => {
   try {
     loading.value = true;
+    console.log(email.value);
     const { error } = await supabase.auth.signInWithOtp({ email: email.value });
     if (error) throw error;
     alert("Check your email for the login link!");

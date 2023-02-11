@@ -1,89 +1,105 @@
 <template>
-  <form class="form-widget" @submit.prevent="updateProfile">
-    <Avatar v-model:path="avatar_path" @upload="updateProfile" />
-    <div>
-      <label for="email">Email</label>
-      <input id="email" type="text" :value="user.email" disabled />
-    </div>
-    <div>
-      <label for="username">Username</label>
-      <input id="username" type="text" v-model="username" />
-    </div>
-    <div>
-      <label for="website">Website</label>
-      <input id="website" type="website" v-model="website" />
-    </div>
+  <v-container v-if="user">
+    <v-row class="justify-center">
+      <v-col cols="12" sm="12" md="6">
+        <v-card>
+          <v-row>
+            <v-col cols="12" sm="12">
+              <Avatar v-if="src" :src="src" />
+            </v-col>
+            <v-col cols="12" sm="12">
+              <v-card-text>
+                <h3>{{ website }}</h3>
+              </v-card-text>
+              <form>
+                <v-text-field
+                  v-model="username"
+                  :counter="15"
+                  label="Username"
+                  required
+                ></v-text-field>
 
-    <div>
-      <input
-        type="submit"
-        class="button primary block"
-        :value="loading ? 'Loading ...' : 'Update'"
-        :disabled="loading"
-      />
-    </div>
+                <v-text-field
+                  v-model="email"
+                  label="Email"
+                  required
+                ></v-text-field>
 
-    <div>
-      <button class="button block" @click="signOut" :disabled="loading">
-        Sign Out
-      </button>
-    </div>
-  </form>
+                <v-text-field
+                  v-model="website"
+                  :items="website"
+                  label="Website"
+                  required
+                ></v-text-field>
+
+                <v-btn
+                  :loading="loading"
+                  :disabled="loading"
+                  @click="
+                    updateProfile(
+                      userId,
+                      username,
+                      email,
+                      website,
+                      avatar,
+                      supabase
+                    )
+                  "
+                >
+                  Update Profile
+                </v-btn>
+              </form>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn
+                  :loading="loading"
+                  :disabled="loading"
+                  outline="primary"
+                  color="primary"
+                  @click="signOut(supabase)"
+                >
+                  Logout
+                </v-btn>
+              </v-card-actions>
+            </v-col>
+          </v-row>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
-  
-  <script setup>
+
+    
+<script setup>
+const props = defineProps(["user"]);
+
+// const user = ref(props.user);
+const user = ref(props.user);
+
 const supabase = useSupabaseClient();
 
 const loading = ref(true);
 const username = ref("");
+const email = ref("");
 const website = ref("");
-const avatar_path = ref("");
+const avatar = ref("");
+const src = ref("");
+const userId = ref(user.value.id);
 
-loading.value = true;
-const user = useSupabaseUser();
-let { data } = await supabase
-  .from("profiles")
-  .select(`username, website, avatar_url`)
-  .eq("id", user.value.id)
-  .single();
-if (data) {
+if (!user) {
+  //Send to index.vue
+  const router = useRouter();
+  router.push("/");
+} else {
+  const data = await getProfile(user.value.id, supabase);
+
   username.value = data.username;
+  email.value = user.value.email;
   website.value = data.website;
-  avatar_path.value = data.avatar_url;
-}
-loading.value = false;
+  avatar.value = data.avatar_url;
 
-async function updateProfile() {
-  try {
-    loading.value = true;
-    const user = useSupabaseUser();
-    const updates = {
-      id: user.value.id,
-      username: username.value,
-      website: website.value,
-      avatar_url: avatar_path.value,
-      updated_at: new Date(),
-    };
-    let { error } = await supabase.from("profiles").upsert(updates, {
-      returning: "minimal", // Don't return the value after inserting
-    });
-    if (error) throw error;
-  } catch (error) {
-    alert(error.message);
-  } finally {
-    loading.value = false;
-  }
-}
-
-async function signOut() {
-  try {
-    loading.value = true;
-    let { error } = await supabase.auth.signOut();
-    if (error) throw error;
-  } catch (error) {
-    alert(error.message);
-  } finally {
-    loading.value = false;
-  }
+  downloadImage(avatar, src, supabase);
+  loading.value = false;
 }
 </script>
+    

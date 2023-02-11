@@ -1,4 +1,5 @@
-import { SupabaseClient } from "@supabase/supabase-js";
+import { SupabaseClient, User } from "@supabase/supabase-js";
+import { Ref } from "nuxt/dist/app/compat/capi";
 
 export const getProfile = async (
   userId: string,
@@ -12,16 +13,55 @@ export const getProfile = async (
   return data;
 };
 
-export const downloadImage = async (path: string, supabase: SupabaseClient) => {
-  let src = "";
+export const downloadImage = async (
+  path: Ref,
+  src: Ref,
+  supabase: SupabaseClient
+) => {
   try {
     const { data, error } = await supabase.storage
       .from("avatars")
-      .download(path);
+      .download(path.value);
+    console.log("Downloaded image path: ", path.value);
+    console.log("Downloaded image: ", data);
     if (error) throw error as any;
-    src = URL.createObjectURL(data);
+    src.value = URL.createObjectURL(data);
   } catch (error) {
     console.error("Error downloading image: ", error.message);
   }
-  return src;
+};
+
+export const signOut = async (supabase: SupabaseClient) => {
+  try {
+    let { error } = await supabase.auth.signOut();
+    if (error) throw error;
+  } catch (error) {
+    alert(error.message);
+  }
+};
+
+export const updateProfile = async (
+  userId: string,
+  username: string,
+  email: string,
+  website: string,
+  avatar_url: string,
+  supabase: SupabaseClient
+) => {
+  try {
+    const updates = {
+      id: userId,
+      username: username,
+      website: website,
+      avatar_url: avatar_url,
+      email: email,
+      updated_at: new Date(),
+    };
+    console.log("updates: ", updates);
+    let { error } = await supabase.from("profiles").upsert(updates);
+    if (error) throw error;
+    console.log("updates: ", updates);
+  } catch (error) {
+    alert(error.message);
+  }
 };

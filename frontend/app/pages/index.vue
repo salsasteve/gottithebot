@@ -1,6 +1,6 @@
 <template>
   <div class="container" style="padding: 50px 0 100px 0">
-    <Account v-if="user" />
+    <Account v-if="user" :user="user" />
     <Auth v-else />
   </div>
 </template>
