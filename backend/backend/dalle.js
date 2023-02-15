@@ -1,6 +1,6 @@
 const { Configuration, OpenAIApi } = require("openai");
 const configuration = new Configuration({
-  apiKey: "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",
+  apiKey: "",
 });
 const openai = new OpenAIApi(configuration);
 async function dalle_2()
